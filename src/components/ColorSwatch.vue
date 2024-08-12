@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import Chroma from "chroma-js";
 
 const Props = defineProps<{
@@ -7,32 +7,15 @@ const Props = defineProps<{
   colorName: string;
 }>();
 
-const okLCHColor: any = ref<number[]>([...Props.defaultColor]);
+const { defaultColor, colorName } = Props;
 
-const hexColor = ref(
-  Chroma.oklch(
-    okLCHColor.value[0],
-    okLCHColor.value[1],
-    okLCHColor.value[2]
-  ).hex()
+const lightness = ref(defaultColor[0] ?? 0);
+const chroma = ref(defaultColor[1] ?? 0);
+const hue = ref(defaultColor[2] ?? 0);
+
+const hexColor = computed(() =>
+  Chroma.oklch(lightness.value, chroma.value, hue.value)
 );
-
-const lightness = ref(okLCHColor.value[0]);
-const chroma = ref(okLCHColor.value[1]);
-const hue = ref(okLCHColor.value[2]);
-
-watch([hue, lightness, chroma], () => {
-  okLCHColor.value = [lightness.value, chroma.value, hue.value];
-  const newHexColor = Chroma.oklch(
-    okLCHColor.value[0],
-    okLCHColor.value[1],
-    okLCHColor.value[2]
-  ).hex();
-
-  if (hexColor.value !== newHexColor) {
-    hexColor.value = newHexColor;
-  }
-});
 </script>
 
 <template>
