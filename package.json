@@ -15,7 +15,6 @@
     "@astrojs/vue": "^4.5.0",
     "astro": "^4.12.3",
     "chroma-js": "^2.6.0",
-    "svelte": "^4.2.18",
     "tailwindcss": "^3.4.7",
     "typescript": "^5.5.4",
     "vue": "^3.4.35"
