@@ -1,5 +1,5 @@
 ---
-import ColorSwatch from "@/components/ColorSwatch.vue";
+import ColorPalette from "@/components/ColorPalette.vue";
 import DefaultLayout from "@/layouts/DefaultLayout.astro";
 ---
 
@@ -20,24 +20,7 @@ import DefaultLayout from "@/layouts/DefaultLayout.astro";
           placeholder="awesome palette #1"
         />
       </div>
-
-      <ColorSwatch
-        colorName="Background"
-        defaultColor={[0.2, 0.5, 220]}
-        client:only="vue"
-      />
-
-      <ColorSwatch
-        colorName="Primary"
-        defaultColor={[0.2, 0.5, 120]}
-        client:only="vue"
-      />
-
-      <ColorSwatch
-        colorName="Secondary"
-        defaultColor={[0.6, 0.3, 110]}
-        client:only="vue"
-      />
+      <ColorPalette client:only />
     </form>
   </section>
 </DefaultLayout>

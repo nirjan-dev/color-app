@@ -6,6 +6,10 @@ const Props = defineProps<{
   defaultColor: number[];
   colorName: string;
 }>();
+const emit = defineEmits<{
+  (e: "deleteColor", colorName: string): void;
+  (e: "updateColor", color: [number, number, number], colorName: string): void;
+}>();
 
 const { defaultColor, colorName } = Props;
 
@@ -16,6 +20,10 @@ const hue = ref(defaultColor[2] ?? 0);
 const hexColor = computed(() =>
   Chroma.oklch(lightness.value, chroma.value, hue.value)
 );
+
+watch([lightness, chroma, hue], () => {
+  emit("updateColor", [lightness.value, chroma.value, hue.value], colorName);
+});
 </script>
 
 <template>
@@ -74,5 +82,13 @@ const hexColor = computed(() =>
         v-model.number="hue"
       />
     </label>
+
+    <button
+      type="button"
+      @click="emit('deleteColor', colorName)"
+      class="bg-red-500 text-gray-50 px-3 py-2 rounded-sm inline my-2"
+    >
+      Delete color
+    </button>
   </div>
 </template>
