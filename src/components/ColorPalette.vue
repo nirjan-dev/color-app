@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AddColor @addColor="handleColorAdd" />
+    <AddColor :existingColors="existingColors" @addColor="handleColorAdd" />
     <ColorSwatch
       v-for="color in colorPalette.palette.value.colors"
       :key="color.name"
@@ -16,8 +16,12 @@
 import ColorSwatch from "@/components/ColorSwatch.vue";
 import AddColor from "@/components/AddColor.vue";
 import { useColorPalette } from "@/composables/useColorPalette";
-
+import { computed } from "vue";
 const colorPalette = useColorPalette();
+
+const existingColors = computed(() => {
+  return colorPalette.palette.value.colors;
+});
 
 function handleColorDelete(colorName: string) {
   colorPalette.deleteColor(colorName);

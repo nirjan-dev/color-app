@@ -5,6 +5,7 @@ import Chroma from "chroma-js";
 const Props = defineProps<{
   defaultColor: number[];
   colorName: string;
+  disableDelete?: boolean;
 }>();
 const emit = defineEmits<{
   (e: "deleteColor", colorName: string): void;
@@ -21,6 +22,10 @@ const hexColor = computed(() =>
   Chroma.oklch(lightness.value, chroma.value, hue.value)
 );
 
+const oklchCSSColor = computed(() => {
+  return `oklch(${lightness.value} ${chroma.value} ${hue.value})`;
+});
+
 watch([lightness, chroma, hue], () => {
   emit("updateColor", [lightness.value, chroma.value, hue.value], colorName);
 });
@@ -28,14 +33,8 @@ watch([lightness, chroma, hue], () => {
 
 <template>
   <div class="flex gap-2 flex-col items-start">
-    <input
-      type="color"
-      readonly
-      :value="hexColor"
-      name="background"
-      id="background"
-      disabled
-    />
+    <div class="w-16 h-10" :style="{ backgroundColor: oklchCSSColor }"></div>
+
     <label for="background">{{ colorName }} color: {{ hexColor }} </label>
 
     <label
@@ -84,6 +83,7 @@ watch([lightness, chroma, hue], () => {
     </label>
 
     <button
+      v-if="!disableDelete"
       type="button"
       @click="emit('deleteColor', colorName)"
       class="bg-red-500 text-gray-50 px-3 py-2 rounded-sm inline my-2"
