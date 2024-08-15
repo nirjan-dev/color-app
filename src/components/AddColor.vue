@@ -6,7 +6,10 @@
       <summary class="text-lg font-bold">Add color</summary>
 
       <div class="grid gap-4 px-4 py-2 border-t-2">
-        <div class="flex gap-2 items-center justify-between">
+        <div
+          class="flex gap-2 items-center justify-between"
+          v-if="['hex', 'random', 'oklch', 'colorPicker'].includes(inputFormat)"
+        >
           <label for="name">Name</label>
           <input
             type="text"
@@ -27,8 +30,6 @@
             <option value="complimentary">Complimentary</option>
             <option value="analogous">Analogous</option>
             <option value="triad">Triad</option>
-            <option value="quad">Quad</option>
-            <option value="monochrome">Monochrome</option>
             <option value="tetrad">Tetrad</option>
           </select>
         </div>
@@ -51,8 +52,14 @@
             <input type="color" v-model="hexString" />
           </template>
 
-          <template v-if="inputFormat === 'complimentary'">
-            <fieldset>
+          <template
+            v-if="
+              ['analogous', 'triad', 'complimentary', 'tetrad'].includes(
+                inputFormat
+              )
+            "
+          >
+            <fieldset class="flex flex-col items-center">
               <legend>Select Base color</legend>
 
               <div v-for="color in existingColors" :key="color.name">
@@ -76,6 +83,48 @@
                 </label>
               </div>
             </fieldset>
+
+            <template v-if="inputFormat === 'complimentary'">
+              <div
+                class="w-16 h-10 block"
+                :style="{
+                  backgroundColor: `oklch(${complimentaryColor[0]} ${complimentaryColor[1]} ${complimentaryColor[2]})`,
+                }"
+              ></div>
+            </template>
+
+            <template v-if="inputFormat === 'analogous'">
+              <div
+                v-for="color in analogousColors"
+                class="w-16 h-10"
+                :key="`${color[0]} ${color[1]} ${color[2]}`"
+                :style="{
+                  backgroundColor: `oklch(${color[0]} ${color[1]} ${color[2]})`,
+                }"
+              ></div>
+            </template>
+
+            <template v-if="inputFormat === 'triad'">
+              <div
+                v-for="color in triadicColors"
+                class="w-16 h-10"
+                :style="{
+                  backgroundColor: `oklch(${color[0]} ${color[1]} ${color[2]})`,
+                }"
+                :key="`${color[0]} ${color[1]} ${color[2]}`"
+              ></div>
+            </template>
+
+            <template v-if="inputFormat === 'tetrad'">
+              <div
+                v-for="color in tetradicColors"
+                class="w-16 h-10"
+                :style="{
+                  backgroundColor: `oklch(${color[0]} ${color[1]} ${color[2]})`,
+                }"
+                :key="`${color[0]} ${color[1]} ${color[2]}`"
+              ></div>
+            </template>
           </template>
         </div>
 
@@ -108,7 +157,7 @@ const emits = defineEmits<{
 }>();
 
 const lch = ref<[number, number, number]>([0.5, 0.3, 123]);
-const baseColorLCH = ref();
+const baseColorLCH = ref(Props.existingColors[0]?.lch ?? lch.value);
 const hexString = ref("#ffffff");
 const colorName = ref("");
 const inputFormat = ref<
@@ -119,10 +168,24 @@ const inputFormat = ref<
   | "complimentary"
   | "analogous"
   | "triad"
-  | "quad"
-  | "monochrome"
   | "tetrad"
 >("oklch");
+
+const complimentaryColor = computed(() => {
+  return getComplimentaryColor(baseColorLCH.value);
+});
+
+const triadicColors = computed(() => {
+  return getTriadicColors(baseColorLCH.value);
+});
+
+const tetradicColors = computed(() => {
+  return getTetradColors(baseColorLCH.value);
+});
+
+const analogousColors = computed(() => {
+  return getAnalogousColors(baseColorLCH.value);
+});
 
 function onAddColor() {
   let finalLCHValue;
@@ -136,15 +199,34 @@ function onAddColor() {
       .oklch()
       .map((value) => Number(value.toFixed(2))) as [number, number, number];
   } else if (inputFormat.value === "complimentary") {
-    const baseColor = baseColorLCH.value as [number, number, number];
+    finalLCHValue = getComplimentaryColor(baseColorLCH.value);
+  } else if (inputFormat.value === "triad") {
+    const [finalLCHValue1, finalLCHValue2] = getTriadicColors(
+      baseColorLCH.value
+    );
+    if (!finalLCHValue1 || !finalLCHValue2) return;
+    emits("addColor", finalLCHValue1, colorName.value);
+    emits("addColor", finalLCHValue2, colorName.value);
+    return;
+  } else if (inputFormat.value === "tetrad") {
+    const [finalLCHValue1, finalLCHValue2, finalLCHValue3] = getTetradColors(
+      baseColorLCH.value
+    );
 
-    let complimentaryHue = (baseColor[2] + 180) % 360;
+    if (!finalLCHValue1 || !finalLCHValue2 || !finalLCHValue3) return;
+    emits("addColor", finalLCHValue1, colorName.value);
+    emits("addColor", finalLCHValue2, colorName.value);
+    emits("addColor", finalLCHValue3, colorName.value);
+    return;
+  } else if (inputFormat.value === "analogous") {
+    const [finalLCHValue1, finalLCHValue2] = getAnalogousColors(
+      baseColorLCH.value
+    );
 
-    finalLCHValue = [baseColor[0], baseColor[1], complimentaryHue] as [
-      number,
-      number,
-      number
-    ];
+    if (!finalLCHValue1 || !finalLCHValue2) return;
+    emits("addColor", finalLCHValue1, colorName.value);
+    emits("addColor", finalLCHValue2, colorName.value);
+    return;
   } else {
     finalLCHValue = lch.value;
   }
@@ -154,6 +236,77 @@ function onAddColor() {
 
 function handleUpdateLCHColor(newLCH: [number, number, number]) {
   lch.value = newLCH;
+}
+
+function getComplimentaryColor(
+  lch: [number, number, number]
+): [number, number, number] {
+  const hueStep = 180;
+  const starterHue = lch[2];
+  const complimentaryHue = (starterHue + hueStep) % 360;
+  const formattedComplimentaryHue = Number(complimentaryHue.toFixed(2));
+  return [lch[0], lch[1], formattedComplimentaryHue] as [
+    number,
+    number,
+    number
+  ];
+}
+
+function getTriadicColors(lch: [number, number, number]) {
+  const hueStep = 120;
+  const starterHue = lch[2];
+
+  const triadColors: [number, number, number][] = [];
+  for (let index = 1; index < 3; index++) {
+    const newHue = (starterHue + index * hueStep) % 360;
+    const formattedHue = Number(newHue.toFixed(2));
+
+    triadColors.push([lch[0], lch[1], formattedHue] as [
+      number,
+      number,
+      number
+    ]);
+  }
+
+  return triadColors;
+}
+
+function getTetradColors(lch: [number, number, number]) {
+  const hueStep = 90;
+  const starterHue = lch[2];
+
+  const tetradColors: [number, number, number][] = [];
+  for (let index = 1; index < 4; index++) {
+    const newHue = (starterHue + index * hueStep) % 360;
+    const formattedHue = Number(newHue.toFixed(2));
+
+    tetradColors.push([lch[0], lch[1], formattedHue] as [
+      number,
+      number,
+      number
+    ]);
+  }
+
+  return tetradColors;
+}
+
+function getAnalogousColors(lch: [number, number, number]) {
+  const hueStep = 30;
+  const starterHue = lch[2];
+
+  const analogousColors: [number, number, number][] = [];
+  for (let index = 1; index < 3; index++) {
+    const newHue = (starterHue + index * hueStep) % 360;
+    const formattedHue = Number(newHue.toFixed(2));
+
+    analogousColors.push([lch[0], lch[1], formattedHue] as [
+      number,
+      number,
+      number
+    ]);
+  }
+
+  return analogousColors;
 }
 </script>
 
