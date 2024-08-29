@@ -37,10 +37,9 @@
         <div class="flex gap-2 items-center justify-between">
           <ColorSwatch
             v-if="inputFormat === 'oklch'"
-            @update-color="handleUpdateLCHColor"
+            @update-hue="handleHueUpdate"
             :disable-delete="true"
-            :color-name="colorName"
-            :default-color="lch"
+            :color="defaultColor"
           />
 
           <template v-if="inputFormat === 'hex'">
@@ -52,80 +51,11 @@
             <input type="color" v-model="hexString" />
           </template>
 
-          <template
-            v-if="
-              ['analogous', 'triad', 'complimentary', 'tetrad'].includes(
-                inputFormat
-              )
-            "
-          >
-            <fieldset class="flex flex-col items-center">
-              <legend>Select Base color</legend>
-
-              <div v-for="color in existingColors" :key="color.name">
-                <label
-                  class="flex gap-2 my-2 items-center"
-                  :for="`color-${color.name}`"
-                >
-                  {{ color.name }}
-                  <div
-                    class="w-16 h-10"
-                    :style="{
-                      backgroundColor: `oklch(${color.lch[0]} ${color.lch[1]} ${color.lch[2]})`,
-                    }"
-                  ></div>
-                  <input
-                    type="radio"
-                    :id="`color-${color.name}`"
-                    :value="color.lch"
-                    v-model="baseColorLCH"
-                  />
-                </label>
-              </div>
-            </fieldset>
-
-            <template v-if="inputFormat === 'complimentary'">
-              <div
-                class="w-16 h-10 block"
-                :style="{
-                  backgroundColor: `oklch(${complimentaryColor[0]} ${complimentaryColor[1]} ${complimentaryColor[2]})`,
-                }"
-              ></div>
-            </template>
-
-            <template v-if="inputFormat === 'analogous'">
-              <div
-                v-for="color in analogousColors"
-                class="w-16 h-10"
-                :key="`${color[0]} ${color[1]} ${color[2]}`"
-                :style="{
-                  backgroundColor: `oklch(${color[0]} ${color[1]} ${color[2]})`,
-                }"
-              ></div>
-            </template>
-
-            <template v-if="inputFormat === 'triad'">
-              <div
-                v-for="color in triadicColors"
-                class="w-16 h-10"
-                :style="{
-                  backgroundColor: `oklch(${color[0]} ${color[1]} ${color[2]})`,
-                }"
-                :key="`${color[0]} ${color[1]} ${color[2]}`"
-              ></div>
-            </template>
-
-            <template v-if="inputFormat === 'tetrad'">
-              <div
-                v-for="color in tetradicColors"
-                class="w-16 h-10"
-                :style="{
-                  backgroundColor: `oklch(${color[0]} ${color[1]} ${color[2]})`,
-                }"
-                :key="`${color[0]} ${color[1]} ${color[2]}`"
-              ></div>
-            </template>
-          </template>
+          <RelativeColorPicker
+            :existingColors="existingColors"
+            :input-format="inputFormat"
+            @colors-to-add-update="onColorsToAddUpdate"
+          />
         </div>
 
         <button
@@ -141,25 +71,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import Chroma from "chroma-js";
 import ColorSwatch from "@/components/ColorSwatch.vue";
 
+import type { Color } from "@/types/color";
+import {
+  defaultChromaScale,
+  defaultLightnessScale,
+} from "@/utils/defaultScaleValues";
+import RelativeColorPicker from "./RelativeColorPicker.vue";
+import { generateColorID } from "@/utils/colorFunctions";
+
 const Props = defineProps<{
-  existingColors: {
-    name: string;
-    lch: [number, number, number];
-  }[];
+  existingColors: Color[];
 }>();
+
+const { existingColors } = Props;
 
 const emits = defineEmits<{
-  (e: "addColor", lch: [number, number, number], colorName: string): void;
+  (e: "addColor", color: Color): void;
 }>();
 
-const lch = ref<[number, number, number]>([0.5, 0.3, 123]);
-const baseColorLCH = ref(Props.existingColors[0]?.lch ?? lch.value);
+const defaultColor: Color = existingColors[0] ?? {
+  id: generateColorID(),
+  baseHue: 23,
+  chromaScale: [...defaultChromaScale],
+  lightnessScale: [...defaultLightnessScale],
+  name: "Default",
+};
+
 const hexString = ref("#ffffff");
+
 const colorName = ref("");
+
 const inputFormat = ref<
   | "hex"
   | "random"
@@ -171,142 +116,52 @@ const inputFormat = ref<
   | "tetrad"
 >("oklch");
 
-const complimentaryColor = computed(() => {
-  return getComplimentaryColor(baseColorLCH.value);
-});
+const colorsToAdd = ref<Color[]>([]);
 
-const triadicColors = computed(() => {
-  return getTriadicColors(baseColorLCH.value);
-});
-
-const tetradicColors = computed(() => {
-  return getTetradColors(baseColorLCH.value);
-});
-
-const analogousColors = computed(() => {
-  return getAnalogousColors(baseColorLCH.value);
-});
+function onColorsToAddUpdate(newColors: Color[]) {
+  colorsToAdd.value = newColors;
+}
 
 function onAddColor() {
-  let finalLCHValue;
+  let newColorHueToAdd;
 
   if (["colorPicker", "hex"].includes(inputFormat.value)) {
-    finalLCHValue = Chroma(hexString.value)
+    const newColorOKLCH = Chroma(hexString.value)
       .oklch()
       .map((value) => Number(value.toFixed(2))) as [number, number, number];
+
+    newColorHueToAdd = newColorOKLCH[2];
   } else if (inputFormat.value === "random") {
-    finalLCHValue = Chroma.random()
+    const newColorOKLCH = Chroma.random()
       .oklch()
       .map((value) => Number(value.toFixed(2))) as [number, number, number];
-  } else if (inputFormat.value === "complimentary") {
-    finalLCHValue = getComplimentaryColor(baseColorLCH.value);
-  } else if (inputFormat.value === "triad") {
-    const [finalLCHValue1, finalLCHValue2] = getTriadicColors(
-      baseColorLCH.value
-    );
-    if (!finalLCHValue1 || !finalLCHValue2) return;
-    emits("addColor", finalLCHValue1, colorName.value);
-    emits("addColor", finalLCHValue2, colorName.value);
-    return;
-  } else if (inputFormat.value === "tetrad") {
-    const [finalLCHValue1, finalLCHValue2, finalLCHValue3] = getTetradColors(
-      baseColorLCH.value
-    );
-
-    if (!finalLCHValue1 || !finalLCHValue2 || !finalLCHValue3) return;
-    emits("addColor", finalLCHValue1, colorName.value);
-    emits("addColor", finalLCHValue2, colorName.value);
-    emits("addColor", finalLCHValue3, colorName.value);
-    return;
-  } else if (inputFormat.value === "analogous") {
-    const [finalLCHValue1, finalLCHValue2] = getAnalogousColors(
-      baseColorLCH.value
-    );
-
-    if (!finalLCHValue1 || !finalLCHValue2) return;
-    emits("addColor", finalLCHValue1, colorName.value);
-    emits("addColor", finalLCHValue2, colorName.value);
-    return;
+    newColorHueToAdd = newColorOKLCH[2];
   } else {
-    finalLCHValue = lch.value;
+    colorsToAdd.value.forEach((color) => {
+      emits("addColor", color);
+    });
+    return;
   }
-
-  emits("addColor", finalLCHValue, colorName.value);
+  const newColorToAdd = {
+    id: generateColorID(),
+    baseHue: newColorHueToAdd,
+    chromaScale: [...defaultChromaScale],
+    lightnessScale: [...defaultLightnessScale],
+    name: colorName.value,
+  };
+  emits("addColor", newColorToAdd);
 }
 
-function handleUpdateLCHColor(newLCH: [number, number, number]) {
-  lch.value = newLCH;
-}
-
-function getComplimentaryColor(
-  lch: [number, number, number]
-): [number, number, number] {
-  const hueStep = 180;
-  const starterHue = lch[2];
-  const complimentaryHue = (starterHue + hueStep) % 360;
-  const formattedComplimentaryHue = Number(complimentaryHue.toFixed(2));
-  return [lch[0], lch[1], formattedComplimentaryHue] as [
-    number,
-    number,
-    number
+function handleHueUpdate(newHue: number) {
+  colorsToAdd.value = [
+    {
+      id: generateColorID(),
+      baseHue: newHue,
+      chromaScale: [...defaultChromaScale],
+      lightnessScale: [...defaultLightnessScale],
+      name: colorName.value,
+    },
   ];
-}
-
-function getTriadicColors(lch: [number, number, number]) {
-  const hueStep = 120;
-  const starterHue = lch[2];
-
-  const triadColors: [number, number, number][] = [];
-  for (let index = 1; index < 3; index++) {
-    const newHue = (starterHue + index * hueStep) % 360;
-    const formattedHue = Number(newHue.toFixed(2));
-
-    triadColors.push([lch[0], lch[1], formattedHue] as [
-      number,
-      number,
-      number
-    ]);
-  }
-
-  return triadColors;
-}
-
-function getTetradColors(lch: [number, number, number]) {
-  const hueStep = 90;
-  const starterHue = lch[2];
-
-  const tetradColors: [number, number, number][] = [];
-  for (let index = 1; index < 4; index++) {
-    const newHue = (starterHue + index * hueStep) % 360;
-    const formattedHue = Number(newHue.toFixed(2));
-
-    tetradColors.push([lch[0], lch[1], formattedHue] as [
-      number,
-      number,
-      number
-    ]);
-  }
-
-  return tetradColors;
-}
-
-function getAnalogousColors(lch: [number, number, number]) {
-  const hueStep = 30;
-  const starterHue = lch[2];
-
-  const analogousColors: [number, number, number][] = [];
-  for (let index = 1; index < 3; index++) {
-    const newHue = (starterHue + index * hueStep) % 360;
-    const formattedHue = Number(newHue.toFixed(2));
-
-    analogousColors.push([lch[0], lch[1], formattedHue] as [
-      number,
-      number,
-      number
-    ]);
-  }
-
-  return analogousColors;
 }
 </script>
 

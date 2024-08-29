@@ -1,43 +1,58 @@
+import type { Color } from "@/types/color";
 import { ref } from "vue";
+import {
+  defaultChromaScale,
+  defaultLightnessScale,
+} from "@/utils/defaultScaleValues";
+import { generateColorID } from "@/utils/colorFunctions";
 
 export function useColorPalette() {
   const palette = ref<{
     name: string;
-    colors: { name: string; lch: [number, number, number] }[];
+    colors: Color[];
   }>({
     name: "",
     colors: [
       {
+        id: generateColorID(),
         name: "Background",
-        lch: [0.2, 0.5, 220],
+        baseHue: 220,
+        lightnessScale: [...defaultLightnessScale],
+        chromaScale: [...defaultChromaScale],
       },
       {
+        id: generateColorID(),
         name: "Primary",
-        lch: [0.2, 0.5, 270],
+        baseHue: 270,
+        lightnessScale: [...defaultLightnessScale],
+        chromaScale: [...defaultChromaScale],
       },
       {
+        id: generateColorID(),
         name: "Secondary",
-        lch: [0.2, 0.5, 320],
+        baseHue: 320,
+        lightnessScale: [...defaultLightnessScale],
+        chromaScale: [...defaultChromaScale],
       },
     ],
   });
 
-  function deleteColor(colorName: string) {
+  function deleteColor(id: string) {
     palette.value.colors = palette.value.colors.filter(
-      (color) => color.name !== colorName
+      (color) => color.id !== id
     );
   }
 
-  function addColor(color: { name: string; lch: [number, number, number] }) {
+  function addColor(color: Color) {
     palette.value.colors.unshift(color);
   }
 
-  function updateColor(color: { name: string; lch: [number, number, number] }) {
-    const colorIndex = palette.value.colors.findIndex(
-      (c) => c.name === color.name
-    );
-    palette.value.colors[colorIndex] = color;
+  function updateHue(hue: number, id: string) {
+    const colorIndex = palette.value.colors.findIndex((c) => c.id === id);
+    if (colorIndex === -1 || !palette.value.colors[colorIndex]) return;
+
+    palette.value.colors[colorIndex].baseHue = hue;
   }
 
-  return { palette, deleteColor, addColor, updateColor };
+  return { palette, deleteColor, addColor, updateHue };
 }
