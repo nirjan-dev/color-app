@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import Chroma from "chroma-js";
 import type { Color } from "@/types/color";
+import "simple-hue-picker";
 
 const Props = defineProps<{
   color: Color;
@@ -29,10 +29,6 @@ const colorScale = computed(() => {
   return scale;
 });
 
-const hexColor = computed(() =>
-  Chroma.oklch(lightness.value, chroma.value, hue.value)
-);
-
 const oklchCSSColor = computed(() => {
   return `oklch(${lightness.value} ${chroma.value} ${hue.value})`;
 });
@@ -46,21 +42,18 @@ watch([hue], () => {
   <div class="flex gap-2 flex-col items-start">
     <div class="w-16 h-10" :style="{ backgroundColor: oklchCSSColor }"></div>
 
-    <label for="background">{{ color.name }} color: {{ hexColor }} </label>
+    <label for="background">{{ color.name }} color </label>
 
     <label
       >Hue {{ hue }}
 
-      <input
-        class="block"
-        type="range"
-        name="hue"
-        id="hue"
-        step="0.1"
-        min="0"
-        max="360"
-        v-model.number="hue"
-      />
+      <div class="my-2 mb-6">
+        <hue-picker
+          :value="hue"
+          @input="(e: { detail: number; }) => (hue = e.detail ?? hue)"
+        >
+        </hue-picker>
+      </div>
     </label>
 
     <div class="flex gap-2">

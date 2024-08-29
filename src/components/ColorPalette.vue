@@ -2,6 +2,7 @@
   <div>
     <AddColor :existingColors="existingColors" @addColor="handleColorAdd" />
     <ColorSwatch
+      class="mb-8"
       v-for="color in colorPalette.palette.value.colors"
       :key="color.id"
       :color="color"
