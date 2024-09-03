@@ -74,9 +74,9 @@
 </template>
 
 <script setup lang="ts">
+import { useColorPalette } from "@/composables/useColorPalette";
 import type { Color } from "@/types/color";
 import {
-  generateColorID,
   getAnalogousColorHues,
   getComplimentaryColorHue,
   getTetradColorHues,
@@ -87,6 +87,8 @@ import {
   defaultChromaScale,
   defaultLightnessScale,
 } from "@/utils/defaultScaleValues";
+
+const { createColor } = useColorPalette();
 
 import { computed, ref, watch } from "vue";
 const Props = defineProps<{
@@ -116,26 +118,19 @@ const baseColorHue = ref(baseColor.value.baseHue);
 const complimentaryColor = computed<Color>(() => {
   const complimentaryColorHue = getComplimentaryColorHue(baseColorHue.value);
 
-  return {
-    id: generateColorID(),
+  return createColor({
     baseHue: complimentaryColorHue,
-    chromaScale: [...defaultChromaScale],
-    lightnessScale: [...defaultLightnessScale],
-    name: "Complimentary",
-  };
+  });
 });
 
 const triadicColors = computed<Color[]>(() => {
   const triadicColorHues = getTriadicColorHues(baseColorHue.value);
 
   return triadicColorHues.map((hue, index) => {
-    return {
-      id: generateColorID(),
+    return createColor({
       baseHue: hue,
-      chromaScale: [...defaultChromaScale],
-      lightnessScale: [...defaultLightnessScale],
-      name: `Triadic Color ${index + 1}`,
-    };
+      name: `Triadic ${index + 1}`,
+    });
   });
 });
 
@@ -143,13 +138,10 @@ const tetradicColors = computed<Color[]>(() => {
   const tetradColorHues = getTetradColorHues(baseColorHue.value);
 
   return tetradColorHues.map((hue, index) => {
-    return {
-      id: generateColorID(),
+    return createColor({
       baseHue: hue,
-      chromaScale: [...defaultChromaScale],
-      lightnessScale: [...defaultLightnessScale],
-      name: `Tetrad Color ${index + 1}`,
-    };
+      name: `Tetrad ${index + 1}`,
+    });
   });
 });
 
@@ -157,13 +149,10 @@ const analogousColors = computed<Color[]>(() => {
   const analogousColorHues = getAnalogousColorHues(baseColorHue.value);
 
   return analogousColorHues.map((hue, index) => {
-    return {
-      id: generateColorID(),
+    return createColor({
       baseHue: hue,
-      chromaScale: [...defaultChromaScale],
-      lightnessScale: [...defaultLightnessScale],
-      name: `Analogous Color ${index + 1}`,
-    };
+      name: `Analogous ${index + 1}`,
+    });
   });
 });
 

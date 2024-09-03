@@ -76,12 +76,9 @@ import Chroma from "chroma-js";
 import ColorSwatch from "@/components/ColorSwatch.vue";
 
 import type { Color } from "@/types/color";
-import {
-  defaultChromaScale,
-  defaultLightnessScale,
-} from "@/utils/defaultScaleValues";
+
 import RelativeColorPicker from "./RelativeColorPicker.vue";
-import { generateColorID } from "@/utils/colorFunctions";
+import { useColorPalette } from "@/composables/useColorPalette";
 
 const Props = defineProps<{
   existingColors: Color[];
@@ -93,13 +90,13 @@ const emits = defineEmits<{
   (e: "addColor", color: Color): void;
 }>();
 
-const defaultColor: Color = existingColors[0] ?? {
-  id: generateColorID(),
-  baseHue: 23,
-  chromaScale: [...defaultChromaScale],
-  lightnessScale: [...defaultLightnessScale],
-  name: "Default",
-};
+const { createColor } = useColorPalette();
+
+const defaultColor: Color =
+  existingColors[0] ??
+  createColor({
+    baseHue: 23,
+  });
 
 const hexString = ref("#ffffff");
 
@@ -142,25 +139,20 @@ function onAddColor() {
     });
     return;
   }
-  const newColorToAdd = {
-    id: generateColorID(),
+
+  const newColorToAdd = createColor({
     baseHue: newColorHueToAdd,
-    chromaScale: [...defaultChromaScale],
-    lightnessScale: [...defaultLightnessScale],
     name: colorName.value,
-  };
+  });
   emits("addColor", newColorToAdd);
 }
 
 function handleHueUpdate(newHue: number) {
   colorsToAdd.value = [
-    {
-      id: generateColorID(),
+    createColor({
       baseHue: newHue,
-      chromaScale: [...defaultChromaScale],
-      lightnessScale: [...defaultLightnessScale],
       name: colorName.value,
-    },
+    }),
   ];
 }
 </script>

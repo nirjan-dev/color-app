@@ -13,27 +13,18 @@ export function useColorPalette() {
   }>({
     name: "",
     colors: [
-      {
-        id: generateColorID(),
+      createColor({
         name: "Background",
         baseHue: 220,
-        lightnessScale: [...defaultLightnessScale],
-        chromaScale: [...defaultChromaScale],
-      },
-      {
-        id: generateColorID(),
+      }),
+      createColor({
         name: "Primary",
         baseHue: 270,
-        lightnessScale: [...defaultLightnessScale],
-        chromaScale: [...defaultChromaScale],
-      },
-      {
-        id: generateColorID(),
+      }),
+      createColor({
         name: "Secondary",
-        baseHue: 320,
-        lightnessScale: [...defaultLightnessScale],
-        chromaScale: [...defaultChromaScale],
-      },
+        baseHue: 200,
+      }),
     ],
   });
 
@@ -54,5 +45,18 @@ export function useColorPalette() {
     palette.value.colors[colorIndex].baseHue = hue;
   }
 
-  return { palette, deleteColor, addColor, updateHue };
+  function createColor(config: { name?: string; baseHue?: number }) {
+    let name = config.name || `Color #${palette.value.colors.length + 1} `;
+    const baseHue = config.baseHue || 23;
+    const newColor: Color = {
+      id: generateColorID(),
+      name,
+      baseHue,
+      lightnessScale: [...defaultLightnessScale],
+      chromaScale: [...defaultChromaScale],
+    };
+    return newColor;
+  }
+
+  return { palette, deleteColor, addColor, updateHue, createColor };
 }
