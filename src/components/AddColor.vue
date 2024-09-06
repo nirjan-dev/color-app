@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid gap-2 border-2 px-4 py-2 rounded-sm mt-2 mb-6 cursor-pointer"
+    class="grid gap-2 border-2 border-black px-4 py-2 rounded-sm mt-2 mb-6 cursor-pointer max-w-fit"
   >
     <details>
       <summary class="text-lg font-bold">Add color</summary>

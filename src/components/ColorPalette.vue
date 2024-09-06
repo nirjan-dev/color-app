@@ -1,6 +1,9 @@
 <template>
   <div>
-    <AddColor :existingColors="existingColors" @addColor="handleColorAdd" />
+    <div class="flex gap-4 items-start">
+      <AddColor :existingColors="existingColors" @addColor="handleColorAdd" />
+      <TailwindExport :tailwind-config="tailwindConfig" />
+    </div>
     <div class="flex gap-4">
       <div>
         <ColorSwatch
@@ -26,7 +29,10 @@ import AddColor from "@/components/AddColor.vue";
 import { useColorPalette } from "@/composables/useColorPalette";
 import { computed, ref } from "vue";
 import type { Color } from "@/types/color";
+import TailwindExport from "./TailwindExport.vue";
 const colorPalette = useColorPalette();
+
+const tailwindConfig = colorPalette.tailwindConfig;
 
 const selectedColorId = ref(colorPalette.palette.value.colors[0]?.id);
 

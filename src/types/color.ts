@@ -5,3 +5,11 @@ export interface Color {
   lightnessScale: number[];
   chromaScale: number[];
 }
+
+export interface TailwindConfigExport {
+  colors: {
+    [key: string]: {
+      [key: number]: string;
+    };
+  };
+}

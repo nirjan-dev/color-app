@@ -1,5 +1,5 @@
-import type { Color } from "@/types/color";
-import { ref } from "vue";
+import type { Color, TailwindConfigExport } from "@/types/color";
+import { computed, ref } from "vue";
 import {
   defaultChromaScale,
   defaultLightnessScale,
@@ -58,5 +58,34 @@ export function useColorPalette() {
     return newColor;
   }
 
-  return { palette, deleteColor, addColor, updateHue, createColor };
+  const tailwindScale = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+
+  const tailwindConfig = computed<TailwindConfigExport>(() => {
+    console.log(palette.value.colors);
+    const colors: Record<string, Record<number, string>> = {};
+    palette.value.colors.forEach((color) => {
+      const colorScale: Record<number, string> = {};
+
+      tailwindScale.forEach((scaleItem, index) => {
+        colorScale[
+          scaleItem
+        ] = `oklch(${color.lightnessScale[index]}% ${color.chromaScale[index]} ${color.baseHue} / <alpha-value>)`;
+      });
+
+      colors[color.name] = colorScale;
+    });
+
+    return {
+      colors,
+    };
+  });
+
+  return {
+    palette,
+    deleteColor,
+    addColor,
+    updateHue,
+    createColor,
+    tailwindConfig,
+  };
 }
