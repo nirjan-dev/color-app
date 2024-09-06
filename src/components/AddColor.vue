@@ -2,7 +2,7 @@
   <div
     class="grid gap-2 border-2 px-4 py-2 rounded-sm mt-2 mb-6 cursor-pointer"
   >
-    <details open>
+    <details>
       <summary class="text-lg font-bold">Add color</summary>
 
       <div class="grid gap-4 px-4 py-2 border-t-2">
@@ -40,6 +40,7 @@
             @update-hue="handleHueUpdate"
             :disable-delete="true"
             :color="defaultColor"
+            :mode="'edit'"
           />
 
           <template v-if="inputFormat === 'hex'">
