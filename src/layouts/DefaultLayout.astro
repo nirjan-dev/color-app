@@ -6,9 +6,21 @@
     <meta name="generator" content={Astro.generator} />
     <title>Astro</title>
   </head>
-  <body>
+  <body class="bg-slate-50">
     <main>
+      <h1
+        class="text-3xl text-center py-2 font-semibold px-2 border-b-4 border-black"
+      >
+        <a href="/">Color Palette Generator</a>
+      </h1>
+
       <slot />
     </main>
+
+    <footer class="bg-slate-100 py-4 text-center">
+      <p>
+        Made with ❤️ by <a href="https://nirjan.dev">Nirjan</a>
+      </p>
+    </footer>
   </body>
 </html>

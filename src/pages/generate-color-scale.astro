@@ -1,0 +1,21 @@
+---
+import ColorPalette from "@/components/ColorPalette.vue";
+import DefaultLayout from "@/layouts/DefaultLayout.astro";
+---
+
+<DefaultLayout>
+  <section class="py-2 px-4">
+    <form action="" class="grid gap-4">
+      <div class="grid gap-1">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="awesome palette #1"
+        />
+      </div>
+      <ColorPalette client:only="vue" />
+    </form>
+  </section>
+</DefaultLayout>

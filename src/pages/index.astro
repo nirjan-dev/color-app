@@ -1,25 +1,63 @@
 ---
-import ColorPalette from "@/components/ColorPalette.vue";
 import DefaultLayout from "@/layouts/DefaultLayout.astro";
 ---
 
 <DefaultLayout>
-  <h1 class="text-3xl text-center py-2 font-semibold px-2 mb-6">
-    Color Palette Generator
-  </h1>
-
-  <section class="py-2 px-4">
-    <form action="" class="grid gap-4">
-      <div class="grid gap-1">
-        <label for="name">Name</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          placeholder="awesome palette #1"
-        />
-      </div>
-      <ColorPalette client:only="vue" />
-    </form>
-  </section>
+  <div class="grid grid-cols-2 min-w-full px-6 border-b-2 border-black">
+    <section
+      class="flex flex-col gap-4 items-start px-6 py-6 border-r-2 border-black"
+    >
+      <h2 class="text-3xl">Use tailwind colors</h2>
+      <ul class="list-disc list">
+        <li>Create your color palette from default tailwind colors</li>
+        <li>
+          The default tailwind colors are handpicked by the tailwind team to
+          look good in most apps and sites
+        </li>
+        <li>
+          However, it might make your project look very similar to other
+          tailwind projects
+        </li>
+        <li>
+          This option is good for people that just need a quick, consistent
+          color palette that just works.
+        </li>
+      </ul>
+      <a
+        class="border-2 border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition-colors"
+        href="/pick-tailwind-colors"
+      >
+        Create Tailwind Color palette
+      </a>
+    </section>
+    <section class="opacity-70 flex flex-col gap-4 items-start px-6 py-6">
+      <h2 class="text-3xl">Generate custom palette (coming soon)</h2>
+      <ul class="list-disc list">
+        <li>
+          Create your own custom color palette from scratch by picking the base
+          colors and generating the color scale for each color
+        </li>
+        <li>
+          Creating custom color palettes can take longer than just using the
+          tailwind colors but it can help your project stand out from the rest
+        </li>
+        <li>
+          There are lots of different ways to create a color palette so I'm stil
+          exploring the best way to do it. Feel free to <a
+            href="https://nirjan.dev/contact">reach out to me</a
+          > if you have any specific suggestions.
+        </li>
+        <li>
+          You will still be able to export the custom color palette to your
+          tailwind config.
+        </li>
+      </ul>
+      <a
+        class="cursor-not-allowed border-2 border-black px-4 py-2 font-bold opacity-60"
+        href="#"
+      >
+        Create custom Color palette
+      </a>
+    </section>
+  </div>
 </DefaultLayout>
