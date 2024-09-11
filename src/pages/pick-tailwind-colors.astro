@@ -1,21 +1,10 @@
 ---
-import DefaultLayout from "@/layouts/DefaultLayout.astro";
+import PreviewLayout from "@/layouts/PreviewLayout.astro";
+import PalettePreview from "@/components/PalettePreview.vue";
+import TailwindColorPalette from "@/components/TailwindColorPalette.vue";
 ---
 
-<DefaultLayout>
-  <div class="grid grid-cols-12 gap-4 min-h-svh">
-    <section class="col-span-4 border-r-2 border-black p-4">
-      <div
-        class="flex justify-between items-center border-b-2 border-gray-400 pb-4"
-      >
-        <h2 class="text-2xl">Pick your colors</h2>
-        <button
-          class="border-2 border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition-colors"
-          >Export Color Palette</button
-        >
-      </div>
-    </section>
-
-    <section class="col-span-8"><h2>Preview your color palette</h2></section>
-  </div>
-</DefaultLayout>
+<PreviewLayout>
+  <PalettePreview client:only="vue" />
+  <TailwindColorPalette client:only="vue" />
+</PreviewLayout>

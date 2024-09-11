@@ -1,0 +1,39 @@
+<template>
+  <section class="grid grid-cols-12 gap-12 items-center py-20">
+    <div class="col-span-6 flex flex-col gap-6">
+      <h2 class="text-5xl font-extrabold mb-4">
+        Manage Projects like never before.
+        <span class="text-accent-500">Blazingly Fast</span>
+      </h2>
+      <p class="text-lg opacity-90">
+        Organizes work so teams know what to do, why it matters, and how to get
+        it done.
+      </p>
+      <div class="flex gap-4 items-center">
+        <a
+          href="#"
+          class="bg-primary-500 px-6 py-3 rounded-lg text-text-950 font-semibold"
+          >Get Started</a
+        >
+        <a class="bg-secondary-500 px-6 py-3 rounded-lg" href="#">Learn more</a>
+      </div>
+    </div>
+    <div class="col-span-6 relative">
+      <img
+        src="/images/work.jpg"
+        alt="Woman working on a laptop"
+        class="w-full h-auto shadow-xl transform -skew-x-3 skew-y-3 rounded-3xl"
+      />
+
+      <div
+        class="transform rounded-3xl absolute inset-0 bg-gradient-to-r from-secondary-500 to-accent-500 opacity-50 mix-blend-multiply"
+      ></div>
+    </div>
+  </section>
+
+  <section></section>
+</template>
+
+<script setup lang="ts"></script>
+
+<style scoped></style>
