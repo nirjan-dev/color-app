@@ -3,7 +3,7 @@
     class="flex gap-2 py-2 fixed bottom-10 px-2 items-center bg-slate-100 z-10"
   >
     <label class="flex flex-col gap-2 items-center"
-      >Primary Color
+      >Primary
       <select v-model="primaryColor">
         <option v-for="(color, name) in colors" :key="color[500]" :value="name">
           {{ name }}
@@ -12,7 +12,7 @@
     </label>
 
     <label class="flex flex-col gap-2 items-center"
-      >Secondary Color
+      >Secondary
       <select v-model="secondaryColor">
         <option v-for="(color, name) in colors" :key="color[500]" :value="name">
           {{ name }}
@@ -21,7 +21,7 @@
     </label>
 
     <label class="flex flex-col gap-2 items-center"
-      >Accent Color
+      >Accent
       <select v-model="accentColor">
         <option v-for="(color, name) in colors" :key="color[500]" :value="name">
           {{ name }}
@@ -30,7 +30,7 @@
     </label>
 
     <label class="flex flex-col gap-2 items-center"
-      >Background Color
+      >Background
 
       <select v-model="backgroundColor">
         <option v-for="(color, name) in colors" :key="color[500]" :value="name">
@@ -40,7 +40,7 @@
     </label>
 
     <label class="flex flex-col gap-2 items-center"
-      >Text Color
+      >Text
       <select v-model="textColor">
         <option v-for="(color, name) in colors" :key="color[500]" :value="name">
           {{ name }}
@@ -55,15 +55,14 @@
 </template>
 
 <script setup lang="ts">
-import colors from "tailwindcss/colors";
 import { ref, watch } from "vue";
-import type { DefaultColors } from "tailwindcss/types/generated/colors";
-
-const primaryColor = ref<keyof DefaultColors>("cyan");
-const secondaryColor = ref<keyof DefaultColors>("pink");
-const accentColor = ref<keyof DefaultColors>("fuchsia");
-const backgroundColor = ref<keyof DefaultColors>("slate");
-const textColor = ref<keyof DefaultColors>("gray");
+import type { TailwindColorName } from "@/utils/tailwindColors";
+import { tailwindColors as colors } from "@/utils/tailwindColors";
+const primaryColor = ref<TailwindColorName>("cyan");
+const secondaryColor = ref<TailwindColorName>("pink");
+const accentColor = ref<TailwindColorName>("fuchsia");
+const backgroundColor = ref<TailwindColorName>("slate");
+const textColor = ref<TailwindColorName>("gray");
 
 watch(primaryColor, () => {
   setColorVariablesOnRoot("primary", primaryColor.value);
@@ -87,7 +86,7 @@ watch(textColor, () => {
 
 function setColorVariablesOnRoot(
   name: string,
-  selectedColor: keyof DefaultColors
+  selectedColor: TailwindColorName
 ) {
   if (!document) {
     return;
@@ -98,7 +97,7 @@ function setColorVariablesOnRoot(
     for (const scaleKey in selectedColorScale) {
       document.documentElement.style.setProperty(
         `--${name}-${scaleKey}`,
-        selectedColorScale[scaleKey as keyof typeof selectedColorScale]
+        selectedColorScale[scaleKey]
       );
     }
   }
