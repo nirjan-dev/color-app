@@ -2,41 +2,10 @@
   <div
     class="flex gap-2 py-2 fixed bottom-10 px-2 items-center bg-slate-100 z-10"
   >
-    <!-- <button for="colorName" popovertarget="primary-color-options">
-      Primary
-    </button>
-
-    <div id="primary-color-options" class="colorOptions" popover>
-      <template v-for="(color, name) in colors" :key="color[500]">
-        <div v-if="color[500]">
-          <input
-            class="colorOptions__input"
-            type="radio"
-            :id="name"
-            :value="color[500]"
-            v-model="selectedColor"
-          />
-          <label class="colorOptions__label" :for="name"
-            ><span
-              class="colorOptions__preview w-28 h-10 inline-flex items-center justify-center"
-              :style="{ backgroundColor: color[500] }"
-            >
-              {{ name }}
-            </span></label
-          >
-        </div>
-      </template>
-    </div> -->
-
     <label class="flex flex-col gap-2 items-center"
       >Primary Color
-      <select>
-        <option value="none">None</option>
-        <option
-          v-for="(color, name) in colors"
-          :key="color[500]"
-          :value="color[500]"
-        >
+      <select v-model="primaryColor">
+        <option v-for="(color, name) in colors" :key="color[500]" :value="name">
           {{ name }}
         </option>
       </select>
@@ -44,13 +13,8 @@
 
     <label class="flex flex-col gap-2 items-center"
       >Secondary Color
-      <select>
-        <option value="none">None</option>
-        <option
-          v-for="(color, name) in colors"
-          :key="color[500]"
-          :value="color[500]"
-        >
+      <select v-model="secondaryColor">
+        <option v-for="(color, name) in colors" :key="color[500]" :value="name">
           {{ name }}
         </option>
       </select>
@@ -58,13 +22,8 @@
 
     <label class="flex flex-col gap-2 items-center"
       >Accent Color
-      <select>
-        <option value="none">None</option>
-        <option
-          v-for="(color, name) in colors"
-          :key="color[500]"
-          :value="color[500]"
-        >
+      <select v-model="accentColor">
+        <option v-for="(color, name) in colors" :key="color[500]" :value="name">
           {{ name }}
         </option>
       </select>
@@ -72,12 +31,21 @@
 
     <label class="flex flex-col gap-2 items-center"
       >Background Color
-      <input type="color" value="#ffffff" />
+
+      <select v-model="backgroundColor">
+        <option v-for="(color, name) in colors" :key="color[500]" :value="name">
+          {{ name }}
+        </option>
+      </select>
     </label>
 
     <label class="flex flex-col gap-2 items-center"
       >Text Color
-      <input type="color" />
+      <select v-model="textColor">
+        <option v-for="(color, name) in colors" :key="color[500]" :value="name">
+          {{ name }}
+        </option>
+      </select>
     </label>
 
     <button class="border-2 border-black px-6 py-2 font-bold ml-4">
@@ -88,22 +56,53 @@
 
 <script setup lang="ts">
 import colors from "tailwindcss/colors";
-import { useTailwindColorPalette } from "@/composables/useTailwindColorPalette";
 import { ref, watch } from "vue";
+import type { DefaultColors } from "tailwindcss/types/generated/colors";
 
-const tailwindColorPalette = useTailwindColorPalette();
+const primaryColor = ref<keyof DefaultColors>("cyan");
+const secondaryColor = ref<keyof DefaultColors>("pink");
+const accentColor = ref<keyof DefaultColors>("fuchsia");
+const backgroundColor = ref<keyof DefaultColors>("slate");
+const textColor = ref<keyof DefaultColors>("gray");
 
-const selectedColor = ref<string>(colors.blue[500]);
-const colorName = ref<string>("Primary");
-
-watch([selectedColor, colorName], () => {
-  tailwindColorPalette.colorPalette.value = [
-    {
-      name: colorName.value,
-      color: selectedColor.value,
-    },
-  ];
+watch(primaryColor, () => {
+  setColorVariablesOnRoot("primary", primaryColor.value);
 });
+
+watch(secondaryColor, () => {
+  setColorVariablesOnRoot("secondary", secondaryColor.value);
+});
+
+watch(accentColor, () => {
+  setColorVariablesOnRoot("accent", accentColor.value);
+});
+
+watch(backgroundColor, () => {
+  setColorVariablesOnRoot("background", backgroundColor.value);
+});
+
+watch(textColor, () => {
+  setColorVariablesOnRoot("text", textColor.value);
+});
+
+function setColorVariablesOnRoot(
+  name: string,
+  selectedColor: keyof DefaultColors
+) {
+  if (!document) {
+    return;
+  }
+
+  const selectedColorScale = colors[selectedColor];
+  if (selectedColorScale instanceof Object) {
+    for (const scaleKey in selectedColorScale) {
+      document.documentElement.style.setProperty(
+        `--${name}-${scaleKey}`,
+        selectedColorScale[scaleKey as keyof typeof selectedColorScale]
+      );
+    }
+  }
+}
 </script>
 
 <style scoped>
