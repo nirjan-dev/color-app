@@ -2,12 +2,12 @@
   <section class="grid grid-cols-12 gap-12 items-center py-20">
     <div class="col-span-6 flex flex-col gap-6">
       <h2 class="text-5xl font-extrabold mb-4">
-        Manage Projects like never before.
-        <span class="text-accent-500">Blazingly Fast</span>
+        <span class="text-accent-500">Meet Chromastery.</span> The next-gen
+        color palette generator for tailwind.
       </h2>
       <p class="text-lg opacity-90">
-        Organizes work so teams know what to do, why it matters, and how to get
-        it done.
+        The easiest way to generate a color palette for your next project. No
+        design experience required. 100% Free, Forever.
       </p>
       <div class="flex gap-4 items-center">
         <a
@@ -20,8 +20,8 @@
     </div>
     <div class="col-span-6 relative">
       <img
-        src="/images/work.jpg"
-        alt="Woman working on a laptop"
+        src="/images/colorful-flower.jpg"
+        alt="a colorful flower"
         class="w-full h-auto shadow-xl transform -skew-x-3 skew-y-3 rounded-3xl"
       />
 
