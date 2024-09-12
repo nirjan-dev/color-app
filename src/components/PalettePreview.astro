@@ -1,0 +1,139 @@
+---
+const features = [
+  {
+    title: "Export to Tailwind",
+    description:
+      "Export your color palette to Tailwind with one click. You own your color palette, no need to log in or subscribe.",
+    isComingSoon: false,
+  },
+  {
+    title: "Live Preview",
+    description:
+      "View your color palette in real-time. Preview it in your browser on an actual site and export it when you're ready.",
+    isComingSoon: false,
+  },
+  {
+    title: "Simple, easy, fast",
+    description:
+      "Create your color palette in seconds. No design experience required. 100% Free, Forever.",
+    isComingSoon: false,
+  },
+  {
+    title: "Acessibility checks",
+    description:
+      "Check if your color palette is accessible. You can use it in any project.",
+    isComingSoon: true,
+  },
+  {
+    title: "Premade palettes",
+    description:
+      "Use one of our premade color palettes from the gallery. The palettes are 100% free and used by some of the top tech companies in the world.",
+    isComingSoon: true,
+  },
+  {
+    title: "Custom Palette builder",
+    description:
+      "Create your own color palette in seconds with our custom palette builder. It includes custom checks to make sure your palette is accessible and usable.",
+    isComingSoon: true,
+  },
+];
+---
+
+<section class="grid grid-cols-12 gap-12 items-center py-20">
+  <div class="col-span-6 flex flex-col gap-6">
+    <h2 class="text-5xl font-extrabold mb-4">
+      <span class="text-accent-500">Meet Chromastery.</span> The next-gen color palette
+      generator for tailwind.
+    </h2>
+    <p class="text-lg opacity-90">
+      The easiest way to generate a color palette for your next project. No
+      design experience required. 100% Free, Forever.
+    </p>
+    <div class="flex gap-4 items-center">
+      <a
+        href="#features"
+        class="bg-primary-500 px-6 py-3 rounded-lg text-text-950 font-semibold"
+        >Get Started</a
+      >
+      <a class="bg-secondary-500 px-6 py-3 rounded-lg" href="#how-it-works"
+        >Learn more</a
+      >
+    </div>
+  </div>
+  <div class="col-span-6 relative">
+    <img
+      src="/images/colorful-flower.jpg"
+      alt="a colorful flower"
+      class="w-full h-auto shadow-xl transform -skew-x-3 skew-y-3 rounded-3xl"
+    />
+
+    <div
+      class="transform rounded-3xl absolute inset-0 bg-gradient-to-r from-secondary-500 to-accent-500 opacity-50 mix-blend-multiply"
+    >
+    </div>
+  </div>
+</section>
+
+<section class="grid gap-16 py-20" id="features">
+  <h2 class="text-center text-5xl font-extrabold">
+    Toolkit for better tailwind color palettes
+  </h2>
+  <div class="grid grid-cols-3 gap-6">
+    {
+      features.map((feature) => (
+        <div class="flex items-start flex-col gap-4 px-8 rounded-lg shadow-lg shadow-secondary-50 py-6 bg-secondary-200">
+          <h3 class="text-3xl font-bold">{feature.title}</h3>
+          {feature.isComingSoon && (
+            <p class="text-accent-500 px-2 py-1 text-sm font-bold border-accent-500 border-2 rounded-full">
+              Coming soon
+            </p>
+          )}
+          <p>{feature.description}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<section
+  class="py-16 grid gap-16 bg-secondary-50 rounded-3xl"
+  id="how-it-works"
+>
+  <h2 class="text-center text-5xl font-extrabold">How it works</h2>
+
+  <ol
+    class="grid grid-cols-3 gap-10 px-8 list-decimal marker:text-4xl list-inside marker:text-accent-500 marker:font-extrabold"
+  >
+    <li>
+      Pick your colors from the color picker. By default it includes all the
+      default tailwind colors which are handpicked by the tailwind team.
+    </li>
+    <li>
+      Preview it live on the site. Whenever you change the colors this site will
+      update the colors in realtime. Primary will be used for the main CTAs,
+      secondary for the larger but less important blocks and accent as the
+      highlight color.
+    </li>
+    <li>
+      Click the export button to get the tailwind snippet you can copy and use
+      in your project. You should be able to use the exported snippet in any
+      tailwind 3 project without any issues.
+    </li>
+  </ol>
+</section>
+
+<section class="py-20 items-center grid gap-8 text-center" id="contact">
+  <h2 class="text-5xl font-extrabold">
+    Have <span class="text-accent-500">any suggestions</span>? Let us know.
+  </h2>
+  <p class="text-lg">
+    If you have any sugesstions or feature requests for this project, feel free
+    to reach out to us.
+  </p>
+  <div>
+    <a
+      href="https://nirjan.dev/contact"
+      class="bg-primary-500 px-6 py-3 rounded-lg">Contact us</a
+    >
+  </div>
+</section>
